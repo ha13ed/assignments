@@ -10,15 +10,15 @@
 img {
     max-width: 200px;
 }
-#submitB {
-    width: 30% !important;
-}
-#submitB2 {
-    width: 30% !important;
-}
 a {
     display: inline-block;
 }
 div {
     white-space: nowrap;
+}
+#submitB {
+    width: 30% !important;
+}
+#submitB2 {
+    width: 30% !important;
 }
