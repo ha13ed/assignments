@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Advance</title>
+        <title>Advance Search</title>
+        <link rel="icon" type="image/png" href="google-logo.jpg"/>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-        <style>
-        </style>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
       <nav class="m-3 navbar navbar-expand-sm">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link text-dark" href="./index.html">home</a>
+            <a class="nav-link text-dark" href="./index.html">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-dark" href="./image.html">image</a>
+            <a class="nav-link text-dark" href="./image.html">Images</a>
           </li>
         </ul>
       </nav>
-      <div class="m-3 text-center">
-        <form action="https://www.google.com/search">
-          <div class="m-3 form-group">
-            <input type="text" name="q" class="rounded-5 form-control form-control-lg">
+      <div class="m-3">
+        <img src="google-logo.jpg" alt="google-logo">
+        <form action="https://www.google.com/search" class="left-form">
+          <div class="row g-3 m-3 form-group">
+            all these words: <input type="text" name="as_q" class="rounded-5 form-control form-control-lg" autofocus>
           </div>
           <div class="m-3 form-group">
-            <input type="submit" value="Google Search" class="rounded-5 form-control form-control-lg btn btn-primary">
+            this exact word or phrase: <input type="text" name="as_epq" class="rounded-5 form-control form-control-lg">
+          </div>
+          <div class="m-3 form-group">
+            any of these words: <input type="text" name="as_oq" class="rounded-5 form-control form-control-lg">
+          </div>
+          <div class="m-3 form-group">
+            none of these words: <input type="text" name="as_eq" class="rounded-5 form-control form-control-lg">
+          </div>
+          <div class="m-3 form-group">
+            <input id="submitB" type="submit" value="Advanced Search" class="rounded-5 form-control form-control-lg btn btn-primary">
           </div>
         </form>
       </div>
     </body>
+    <footer">
+      <div class="m-3 fixed-bottom">
+        <p class="text-center style="white-space: nowrap;">Disclaimer: This website created for illustration and learning purpose and we are not part of
+          <a href="https://www.google.com ">google.com</a> team</p>
+      </div>
+    </footer>
 </html>

@@ -1,8 +1,24 @@
-form {
+.center-form {
     max-width: 600px;
     margin: 0 auto !important;
     text-align: center !important;
 }
+.left-form {
+    max-width: 600px;
+    text-align: start !important;
+}
+img {
+    max-width: 200px;
+}
 #submitB {
     width: 30% !important;
+}
+#submitB2 {
+    width: 30% !important;
+}
+a {
+    display: inline-block;
+}
+div {
+    white-space: nowrap;
 }
