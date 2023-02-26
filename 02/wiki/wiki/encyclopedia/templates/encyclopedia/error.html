@@ -1,10 +1,9 @@
 {% extends "encyclopedia/layout.html" %}
 
 {% block title %}
-    {{ title }}
+    Page {{ title }} Was Not Found!
 {% endblock %}
 
 {% block body %}
-    {{ entry|safe }}
-    <a href="/edit/{{ title }}">Edit</a>
+    <h1>Page {{ title }} Not Found!</h1>
 {% endblock %}
