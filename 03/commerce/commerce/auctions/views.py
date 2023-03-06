@@ -1,14 +1,53 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
+from .models import User, Listing, Bid
+import datetime
+from django.db.models import Max
 
-from .models import User
 
+class ListingForm(forms.ModelForm):
+    class Meta:
+        model = Listing
+        fields = '__all__'
+        fields = ['title', 'description', 'start_bid', 'img_url']
+        labels = {
+            'title': '', 'description': '', 'start_bid': '', 'img_url': ''
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'm-2 rounded-5 form-control form-control-lg', 'placeholder': 'Title', 'style': 'text-align: center;'}),
+            'description': forms.Textarea(attrs={'class': 'm-2 rounded-5 form-control', 'rows': 10, 'cols': 150, 'placeholder': 'Description', 'style': 'height: auto;'}),
+            'start_bid': forms.NumberInput(attrs={'class': 'm-2 rounded-5 form-control', 'min': 0, 'max': 100, 'placeholder': 'Bid start'}),
+            'img_url': forms.URLInput(attrs={'class': 'm-2 rounded-5 form-control', 'placeholder': 'Iamge URL'}),
+        }
+
+class BidForm(forms.ModelForm):
+    class Meta:
+        model = Bid
+        fields = ['price']
+        labels = {
+            'price': ''
+        }
+        widgets = {
+            'price': forms.NumberInput(attrs={'class': 'm-2 rounded-5 form-control', 'min': 0, 'max': 100, 'Placeholder': 'Bid price'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        min_value = kwargs.pop('min_value', None)
+        super().__init__(*args, **kwargs)
+        if min_value is not None:
+            self.fields['price'].widget.attrs['min'] = min_value
 
 def index(request):
-    return render(request, "auctions/index.html")
+    # it should modify to active except all objects
+    listings = Listing.objects.all()
+    return render(request, "auctions/index.html", {
+        "listings": listings
+    })
 
 
 def login_view(request):
@@ -29,7 +68,6 @@ def login_view(request):
             })
     else:
         return render(request, "auctions/login.html")
-
 
 def logout_view(request):
     logout(request)
@@ -61,3 +99,56 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+
+@login_required(login_url="/login")
+def create_listing(request):
+    if request.method == "POST":
+        form = ListingForm(request.POST)
+        if form.is_valid():
+            listing = Listing()
+            listing.title = form.cleaned_data["title"]
+            listing.description = form.cleaned_data["description"]
+            listing.start_bid = form.cleaned_data["start_bid"]
+            listing.img_url = form.cleaned_data["img_url"]
+            listing.create_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            listing.owner = request.user
+            listing.save()
+            return HttpResponseRedirect(reverse("index"))
+    form = ListingForm()
+    return render(request, "auctions/new.html", {
+        "form": form
+    })
+
+def listing(request, id):
+    listing = Listing.objects.get(id = id)
+    if request.method == "POST":
+        if "form_watchlist" in request.POST:
+            if request.user in listing.watchlist.all():
+                listing.watchlist.remove(request.user)
+            else:
+                listing.watchlist.add(request.user)
+            print(request.POST.get("watchlist"))
+        else:
+            form = BidForm(request.POST)
+            if form.is_valid():
+                bid = Bid()
+                bid.title = listing
+                bid.bidder = request.user
+                bid.bid_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                bid.price = form.cleaned_data["price"]
+                bid.save()
+                listing.best_bid = bid.price
+                listing.save()
+
+    """max_price_bid = Bid.objects.aggregate(Max('price'))
+    max_price = max_price_bid['price__max']"""
+    if listing.best_bid:
+        min_value = 1.01 * listing.best_bid
+    else:
+        min_value = listing.start_bid
+    form = BidForm(min_value = min_value)
+    bids = Bid.objects.filter(title = listing.id)
+    return render(request, "auctions/listing.html", {
+        "listing": listing, "bids": bids, "form": form, "watchlist": request.user in listing.watchlist.all()
+    })

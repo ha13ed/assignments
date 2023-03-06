@@ -1,0 +1,53 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2><strong>Bid</strong></h2>
+        <div class="ms-5 me-5 flex-container">
+            <div class="m-3 p-4 rounded-5">
+                <div class="text-center">
+                    <h2><strong>{{listing.title}}</strong></h2>
+                </div>
+                <div>
+                    <div class="image-container">
+                        {% if listing.img_url %}
+                            <img src="{{listing.img_url}}" alt="{{listing.title}}" class="img-index">
+                        {% else %}
+                            <img src="http://www.clker.com/cliparts/f/Z/G/4/h/Q/no-image-available-md.png" alt="{{listing.title}}" class="img-index">
+                        {% endif %}
+                        <form action="{{listing.id}}" method="post" name="form_watchlist">
+                            {% csrf_token %}
+                            {% if watchlist %}
+                                <input type="submit" class="watchlist-button-enabled" value="Watchlist" name="watchlist">
+                            {% else %}
+                                <input type="submit" class="watchlist-button-disabled" value="Watchlist" name="watchlist">
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+                <div class="text-dark des_s">
+                    {{listing.description}}
+                </div>
+                <div class="text-dark text-center">
+                    {% if listing.best_bid %}
+                        <h2><strong>Current Bid Winner: {{listing.best_bid}}$</strong></h2>
+                    {% else %}
+                        <h3>Bid Starts: {{listing.start_bid}}$</h3>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="m-3 p-4 rounded-5">
+                <form action="{{listing.id}}" method="post" class="center-form" name="bidding">
+                    {% csrf_token %}
+                    {{ form }}
+                    <input class="rounded-5 btn btn-primary" type="submit" value="Bid!">
+                    <div class="m-3 p-4 rounded-5">
+                        <h2>Details:</h2>
+                        Listed By: {{ listing.owner }}<br>
+                        {% for bid in bids %}
+                            at {{bid.bid_date}}, {{bid.bidder}} bided to {{bid.price}}$ price<br>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+        </div>
+{% endblock %}

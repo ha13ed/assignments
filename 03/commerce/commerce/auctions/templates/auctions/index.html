@@ -1,7 +1,39 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2><strong>Active Listings</strong></h2>
+        <div class="ms-5 me-5 flex-container">
+            {% for listing in listings %}
+            <div class="p-4 d-flex justify-content-center center-listings rounded-5">
+                    <a href="listing/{{listing.id}}" class="nounderline">
+                        <div class="text-dark nounderline">
+                            <h2><strong>{{listing.title}}</strong></h2>
+                        </div>
+                        <div>
+                            {% if listing.img_url %}
+                                <img src="{{listing.img_url}}" alt="{{listing.title}}" class="img-index">
+                            {% else %}
+                                <img src="https://icon-library.com/images/no-picture-available-icon/no-picture-available-icon-1.jpg"
+                                alt="{{listing.title}}" class="img-index">
+                            {% endif %}
+                        </div>
+                        <div class="text-dark des_s">
+                            {{listing.description}}
+                        </div>
+                        <div class="text-dark">
+                            {% if listing.best_bid %}
+                                <h2><strong>Current Bid Winner: {{listing.best_bid}}$</strong></h2>
+                            {% else %}
+                                <h3>Bid Starts: {{listing.start_bid}}$</h3>
+                            {% endif %}
+                        </div>    
+                    </a>
+            </div>
 
-    TODO
+            {% empty %}
+                <div class="d-flex justify-content-center text-danger">
+                    <h3>There is no active listing!</h3>
+                </div>
+            {% endfor %}
+        </div>
 {% endblock %}

@@ -1,3 +1,137 @@
 body {
+    background-color: #f2f2f2;
+    font-family: Arial, sans-serif;
+    text-align: center;
     padding: 10px;
+}
+
+h1, h2 {
+    color: #008080;
+}
+
+img {
+    border-radius:10px;
+    width: 420px;
+    height: 300px;
+    object-fit: cover;
+}
+.img-index {
+    border-radius: 125px !important;
+    transition: border-radius 0.5s;
+}
+.img-index:hover {
+    border-radius:10px !important;
+}
+
+.center-form {
+    width: 450px;
+    height: 500px;
+    opacity: 0.7;
+    margin: 0 auto !important;
+    text-align: center !important;
+    transition: transform 1s, opacity 1s, border-radius 0.7s;
+}
+
+.center-form:hover {
+    border-radius:10px!important;
+    opacity: 1;
+    -ms-transform: scale(1.02); /* IE 9 */
+    -webkit-transform: scale(1.02); /* Safari 3-8 */
+    transform: scale(1.02); 
+}
+.center-listings {
+    border-radius: 100px !important;
+    width: 450px;
+    height: 550px;
+    opacity: 0.5;
+    margin: 0 auto !important;
+    text-align: center !important;
+    transition: transform 1s, opacity 1s, border-radius 0.7s;
+}
+
+.center-listings:hover {
+    border-radius:10px!important;
+    opacity: 1;
+    -ms-transform: scale(1.05); /* IE 9 */
+    -webkit-transform: scale(1.05); /* Safari 3-8 */
+    transform: scale(1.05); 
+}
+
+.nounderline {
+    text-decoration: none !important
+}
+
+.flex-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+.flex-container > div {
+    border: solid;
+    border-color: rgb(0, 0, 0);
+    margin-top: 20px !important;
+}
+
+.des_s {
+    border-radius:10px!important;
+    text-align: center;
+    white-space: wrap; 
+    width: 420px;
+    height: 100px;
+    overflow-y: auto; /* Hide vertical scrollbar */
+    padding-right: 5px;
+    text-overflow: ellipsis; 
+    border: 1px solid #000000;
+}
+.des_s:hover {
+    overflow-y: auto;
+}
+
+.image-container {
+    position: relative;
+    display: inline-block; /* or block, depending on your needs */
+  }
+  
+.watchlist-button-disabled {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    background-color: #fff;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #000;
+    transition: all 0.2s ease-in-out;
+}
+.watchlist-button-disabled:hover {
+    background-color: #ecf5bf;
+    color: #2f3706;
+    -ms-transform: scale(1.02); /* IE 9 */
+    -webkit-transform: scale(1.02); /* Safari 3-8 */
+}
+
+.watchlist-button-enabled {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    background-color: #ecf5bf;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    color: #2f3706;
+    transition: all 0.2s ease-in-out;
+}
+
+.watchlist-button-enabled:hover {
+    background-color: #fff;
+    color: #000;
+    -ms-transform: scale(0.98); /* IE 9 */
+    -webkit-transform: scale(0.98); /* Safari 3-8 */
+}
+
+.text-center {
+    text-align: center;
 }
