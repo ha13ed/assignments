@@ -3,11 +3,10 @@
 {% block body %}
     <h2>Create Listing</h2>
     <div class="m-5">
-        <form action="{% url 'create_listing' %}" method="post" class="center-form">
+        <form action="{% url 'create_listing' %}" method="post" class="center-form listing-s">
             {% csrf_token %}
             {{ form }}
             <input class="rounded-5 btn btn-primary" type="submit" value="Save!">
         </form>
     </div>
-
 {% endblock %}

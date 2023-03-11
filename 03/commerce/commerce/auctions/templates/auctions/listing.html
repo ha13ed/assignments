@@ -2,52 +2,100 @@
 
 {% block body %}
     <h2><strong>Bid</strong></h2>
-        <div class="ms-5 me-5 flex-container">
-            <div class="m-3 p-4 rounded-5">
+        <div class="ms-4 me-4 flex-container">
+            <div class="p-4 justify-content-center center-listings rounded-5">
                 <div class="text-center">
                     <h2><strong>{{listing.title}}</strong></h2>
+                </div>
+                <div class="text-dark nounderline">
+                    Category: {{ listing.get_category_display }}
                 </div>
                 <div>
                     <div class="image-container">
                         {% if listing.img_url %}
                             <img src="{{listing.img_url}}" alt="{{listing.title}}" class="img-index">
                         {% else %}
-                            <img src="http://www.clker.com/cliparts/f/Z/G/4/h/Q/no-image-available-md.png" alt="{{listing.title}}" class="img-index">
+                            <img src="https://icon-library.com/images/no-picture-available-icon/no-picture-available-icon-1.jpg" alt="{{listing.title}}" class="img-index">
                         {% endif %}
-                        <form action="{{listing.id}}" method="post" name="form_watchlist">
-                            {% csrf_token %}
-                            {% if watchlist %}
-                                <input type="submit" class="watchlist-button-enabled" value="Watchlist" name="watchlist">
-                            {% else %}
-                                <input type="submit" class="watchlist-button-disabled" value="Watchlist" name="watchlist">
-                            {% endif %}
-                        </form>
+                        {% if user.is_authenticated and request.user != listing.owner %}
+                            <form action="{{listing.id}}" method="post">
+                                {% csrf_token %}
+                                {% if watchlist %}
+                                    <input type="submit" class="watchlist-button-enabled" value="Watchlist" name="watchlist">
+                                {% else %}
+                                    <input type="submit" class="watchlist-button-disabled" value="Watchlist" name="watchlist">
+                                {% endif %}
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="text-dark des_s">
                     {{listing.description}}
                 </div>
                 <div class="text-dark text-center">
-                    {% if listing.best_bid %}
-                        <h2><strong>Current Bid Winner: {{listing.best_bid}}$</strong></h2>
+                    {% if listing.is_active %}
+                        {% if listing.best_bid %}
+                            <h2><strong>Current Bid Winner: {{listing.best_bid}}$</strong></h2>
+                        {% else %}
+                            <h3>Bid Starts: {{listing.start_bid}}$</h3>
+                        {% endif %}
                     {% else %}
-                        <h3>Bid Starts: {{listing.start_bid}}$</h3>
+                        {% if request.user == listing.best_bidder %}
+                            <h2><strong>YOU won the bid at {{listing.best_bid}}$ !</strong></h2>
+                        {% else %}
+                            {{listing.best_bidder}} won the bid at {{listing.best_bid}}$
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
-            <div class="m-3 p-4 rounded-5">
-                <form action="{{listing.id}}" method="post" class="center-form" name="bidding">
-                    {% csrf_token %}
-                    {{ form }}
-                    <input class="rounded-5 btn btn-primary" type="submit" value="Bid!">
-                    <div class="m-3 p-4 rounded-5">
-                        <h2>Details:</h2>
-                        Listed By: {{ listing.owner }}<br>
-                        {% for bid in bids %}
-                            at {{bid.bid_date}}, {{bid.bidder}} bided to {{bid.price}}$ price<br>
-                        {% endfor %}
-                    </div>
-                </form>
+            <div class="mt-4 p-2 justify-content-center center-listings rounded-5">
+                {% if listing.is_active %}
+                    {% if user.is_authenticated and request.user != listing.owner %}
+                        <form action="{{listing.id}}" method="post" class="mt-4 listing-form" name="to_bid">
+                            {% csrf_token %}
+                            {{ form_bid }}
+                            <input class="rounded-5 btn btn-primary" type="submit" value="Bid !">
+                        </form>
+                    {% endif %}
+                    {% if request.user == listing.owner %}
+                        <form action="{{listing.id}}" method="post" class="listing-form">
+                            {% csrf_token %}
+                            <input class="m-4 rounded-5 btn btn-danger" type="submit" value="Close the Bid !" name="closing">
+                        </form>
+                    {% endif %}
+                {% else %}
+                    <h3>Listing has been closed</h3>
+                {% endif %}
+
+                <div class="mt-4 p-2 rounded-5">
+                    <h2>Details:</h2>
+                    <strong>Listed By: {{ listing.owner }}</strong><br>
+                    {% for bid in bids %}
+                        at {{bid.bid_date}}, {{bid.bidder}} bided to {{bid.price}}$ price<br>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="mt-4 p-2 justify-content-center center-listings rounded-5">
+                <div class="mt-4 text-center">
+                    <h2><strong>Comments</strong></h2>
+                </div> 
+                <div des_s>
+                    {% for comment in comments %}
+                        {{ comment }}<br>
+                    {% empty %}
+                        No comments till now
+                    {% endfor %}
+                </div>
+                <div class="m-2 p-2 rounded-5">
+                    <h2>Write Your Comment:</h2>
+                </div>
+                {% if user.is_authenticated and request.user != listing.owner %}
+                    <form action="{{listing.id}}" method="post" class="listing-form" name="commenting">
+                        {% csrf_token %}
+                        {{ form_comment }}
+                        <input class="rounded-5 btn btn-primary" type="submit" value="Comment !">
+                    </form>
+                {% endif %}
             </div>
         </div>
 {% endblock %}

@@ -5,23 +5,28 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
-from .models import User, Listing, Bid
+from .models import User, Listing, Bid, Comment
 import datetime
-from django.db.models import Max
+from django.db.models import Max, Q
+from django.db.models.functions import Random
 
 
 class ListingForm(forms.ModelForm):
     class Meta:
         model = Listing
         fields = '__all__'
-        fields = ['title', 'description', 'start_bid', 'img_url']
+        fields = ['title', 'description','category', 'start_bid', 'img_url']
         labels = {
-            'title': '', 'description': '', 'start_bid': '', 'img_url': ''
+            'title': '', 'description': '','category': '', 'start_bid': '', 'img_url': ''
         }
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'm-2 rounded-5 form-control form-control-lg', 'placeholder': 'Title', 'style': 'text-align: center;'}),
-            'description': forms.Textarea(attrs={'class': 'm-2 rounded-5 form-control', 'rows': 10, 'cols': 150, 'placeholder': 'Description', 'style': 'height: auto;'}),
-            'start_bid': forms.NumberInput(attrs={'class': 'm-2 rounded-5 form-control', 'min': 0, 'max': 100, 'placeholder': 'Bid start'}),
+            'title': forms.TextInput(attrs={'class': 'm-2 rounded-5 form-control form-control-lg',
+             'placeholder': 'Title', 'style': 'text-align: center;'}),
+            'description': forms.Textarea(attrs={'class': 'm-2 rounded-5 form-control', 'rows': 10,
+             'cols': 150, 'placeholder': 'Description', 'style': 'height: auto;'}),
+             'category': forms.Select(attrs={'class': 'm-2 rounded-5 form-control'}),
+            'start_bid': forms.NumberInput(attrs={'class': 'm-2 rounded-5 form-control', 'min': 0,
+             'max': 100, 'placeholder': 'Bid start'}),
             'img_url': forms.URLInput(attrs={'class': 'm-2 rounded-5 form-control', 'placeholder': 'Iamge URL'}),
         }
 
@@ -33,7 +38,8 @@ class BidForm(forms.ModelForm):
             'price': ''
         }
         widgets = {
-            'price': forms.NumberInput(attrs={'class': 'm-2 rounded-5 form-control', 'min': 0, 'max': 100, 'Placeholder': 'Bid price'})
+            'price': forms.NumberInput(attrs={'class': 'mt-4 m-2 rounded-5 form-control',
+             'min': 0, 'max': 100, 'Placeholder': 'Bid price'})
         }
 
     def __init__(self, *args, **kwargs):
@@ -42,9 +48,21 @@ class BidForm(forms.ModelForm):
         if min_value is not None:
             self.fields['price'].widget.attrs['min'] = min_value
 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['comment']
+        labels = {
+            'comment': ''
+        }
+        widgets = {
+            'comment': forms.Textarea(attrs={'class': 'm-2 rounded-5 form-control', 'rows': 5, 'cols': 50,
+        'placeholder': 'Your Comment', 'style': 'height: auto;'})
+        }
+
 def index(request):
     # it should modify to active except all objects
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(is_active = True).order_by(Random())
     return render(request, "auctions/index.html", {
         "listings": listings
     })
@@ -111,6 +129,8 @@ def create_listing(request):
             listing.description = form.cleaned_data["description"]
             listing.start_bid = form.cleaned_data["start_bid"]
             listing.img_url = form.cleaned_data["img_url"]
+            listing.is_active = True
+            listing.category = form.cleaned_data["category"]
             listing.create_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             listing.owner = request.user
             listing.save()
@@ -123,23 +143,37 @@ def create_listing(request):
 def listing(request, id):
     listing = Listing.objects.get(id = id)
     if request.method == "POST":
-        if "form_watchlist" in request.POST:
+        print(request.POST)
+        if "watchlist" in request.POST:
             if request.user in listing.watchlist.all():
                 listing.watchlist.remove(request.user)
             else:
                 listing.watchlist.add(request.user)
-            print(request.POST.get("watchlist"))
-        else:
-            form = BidForm(request.POST)
-            if form.is_valid():
+        elif "price" in request.POST:
+            form_bid = BidForm(request.POST)
+            if form_bid.is_valid():
                 bid = Bid()
                 bid.title = listing
                 bid.bidder = request.user
                 bid.bid_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                bid.price = form.cleaned_data["price"]
+                bid.price = form_bid.cleaned_data["price"]
                 bid.save()
                 listing.best_bid = bid.price
+                listing.best_bidder = bid.bidder
                 listing.save()
+        elif "closing" in request.POST:
+            listing.is_active = False
+            listing.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            form_comment = CommentForm(request.POST)
+            if form_comment.is_valid():
+                comment = Comment()
+                comment.title = listing
+                comment.commenter = request.user
+                comment.comment_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                comment.comment = form_comment.cleaned_data["comment"]
+                comment.save()
 
     """max_price_bid = Bid.objects.aggregate(Max('price'))
     max_price = max_price_bid['price__max']"""
@@ -147,8 +181,40 @@ def listing(request, id):
         min_value = 1.01 * listing.best_bid
     else:
         min_value = listing.start_bid
-    form = BidForm(min_value = min_value)
+    form_bid = BidForm(min_value = min_value)
+    form_comment = CommentForm()
     bids = Bid.objects.filter(title = listing.id)
+    comments = Comment.objects.filter(title = listing.id)
     return render(request, "auctions/listing.html", {
-        "listing": listing, "bids": bids, "form": form, "watchlist": request.user in listing.watchlist.all()
+        "listing": listing, "bids": bids, "comments": comments, "form_bid": form_bid,
+        "form_comment":form_comment, "watchlist": request.user in listing.watchlist.all()
+    })
+
+@login_required(login_url="/login")
+def watchlist(request):
+    criterion1 = Q(watchlist = request.user)
+    criterion2 = Q(is_active = True)
+    listings = Listing.objects.filter(criterion1 & criterion2)
+    return render(request, "auctions/index.html", {
+        "listings": listings
+    })
+
+def categories_index(request):
+    categories = Listing.Category.choices
+    return render(request, "auctions/categories.html", {
+        "categories": categories
+    })
+
+def categories(request, q):
+    criterion1 = Q(category = q)
+    criterion2 = Q(is_active = True)
+    listings = Listing.objects.filter(criterion1 & criterion2)
+    return render(request, "auctions/index.html", {
+        "listings": listings
+    })
+
+def closed(request):
+    listings = Listing.objects.filter(is_active = False)
+    return render(request, "auctions/closed.html", {
+        "listings": listings
     })

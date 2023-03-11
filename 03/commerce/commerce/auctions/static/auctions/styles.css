@@ -11,7 +11,7 @@ h1, h2 {
 
 img {
     border-radius:10px;
-    width: 420px;
+    width: 410px;
     height: 300px;
     object-fit: cover;
 }
@@ -24,9 +24,16 @@ img {
 }
 
 .center-form {
-    width: 450px;
-    height: 500px;
-    opacity: 0.7;
+    width: 380px;
+    height: 400px;
+    margin: 0 auto !important;
+    text-align: center !important;
+    transition: transform 1s, opacity 1s, border-radius 0.7s;
+}
+
+.listing-form {
+    width: 380px;
+    height: 50px;
     margin: 0 auto !important;
     text-align: center !important;
     transition: transform 1s, opacity 1s, border-radius 0.7s;
@@ -34,27 +41,45 @@ img {
 
 .center-form:hover {
     border-radius:10px!important;
-    opacity: 1;
     -ms-transform: scale(1.02); /* IE 9 */
     -webkit-transform: scale(1.02); /* Safari 3-8 */
     transform: scale(1.02); 
 }
+
+.listing-form:hover {
+    border-radius:10px!important;
+    -ms-transform: scale(1.02); /* IE 9 */
+    -webkit-transform: scale(1.02); /* Safari 3-8 */
+    transform: scale(1.02); 
+}
+
 .center-listings {
     border-radius: 100px !important;
-    width: 450px;
+    width: 470px;
     height: 550px;
-    opacity: 0.5;
+    overflow-y: auto; /* Hide vertical scrollbar */
     margin: 0 auto !important;
     text-align: center !important;
-    transition: transform 1s, opacity 1s, border-radius 0.7s;
+    transition: transform 1s,opacity 1s, border-radius 0.7s;
+}
+
+.listing-s {
+    transition: transform 1s,opacity 1s, border-radius 0.7s;
+    opacity: 0.5;
+    -ms-transform: scale(0.95); /* IE 9 */
+    -webkit-transform: scale(0.95); /* Safari 3-8 */
+    transform: scale(0.95); 
 }
 
 .center-listings:hover {
     border-radius:10px!important;
+}
+
+.listing-s:hover {
     opacity: 1;
-    -ms-transform: scale(1.05); /* IE 9 */
-    -webkit-transform: scale(1.05); /* Safari 3-8 */
-    transform: scale(1.05); 
+    -ms-transform: scale(1); /* IE 9 */
+    -webkit-transform: scale(1); /* Safari 3-8 */
+    transform: scale(1); 
 }
 
 .nounderline {
@@ -108,6 +133,7 @@ img {
     background-color: #ecf5bf;
     color: #2f3706;
     -ms-transform: scale(1.02); /* IE 9 */
+    transform: scale(1.02);
     -webkit-transform: scale(1.02); /* Safari 3-8 */
 }
 
@@ -129,6 +155,7 @@ img {
     background-color: #fff;
     color: #000;
     -ms-transform: scale(0.98); /* IE 9 */
+    transform: scale(0.98);
     -webkit-transform: scale(0.98); /* Safari 3-8 */
 }
 

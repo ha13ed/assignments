@@ -24,10 +24,10 @@
                             {{listing.description}}
                         </div>
                         <div class="text-dark">
-                            {% if listing.best_bid %}
-                                <h2><strong>Current Bid Winner: {{listing.best_bid}}$</strong></h2>
+                            {% if request.user == listing.best_bidder %}
+                                <h2><strong>YOU won the bid at {{listing.best_bid}}$ !</strong></h2>
                             {% else %}
-                                <h3>Bid Starts: {{listing.start_bid}}$</h3>
+                                {{listing.best_bidder}} won the bid at {{listing.best_bid}}$
                             {% endif %}
                         </div>    
                     </a>
